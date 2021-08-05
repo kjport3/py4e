@@ -113,6 +113,23 @@
 #     print(tag.get('href', None))
 
 
+# # Exercise 12.1
+# import socket
+# mysock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# mysock.connect(('data.pr4e.org', 80))
+# cmd = 'GET http://data.pr4e.org/intro-short.txt HTTP/1.0\r\n\r\n'.encode()
+# mysock.send(cmd)
+#
+# while True:
+#     data = mysock.recv(512)
+#     if len(data) < 1:
+#         break
+#     print(data.decode(),end='')
+#
+# mysock.close()
+
+
+# # Exercise 12.2
 # from urllib.request import urlopen
 # from bs4 import BeautifulSoup
 # import ssl
@@ -122,32 +139,44 @@
 # ctx.check_hostname = False
 # ctx.verify_mode = ssl.CERT_NONE
 #
-# url = input('Enter - ')
+# url = "http://py4e-data.dr-chuck.net/comments_1310059.html"
 # html = urlopen(url, context=ctx).read()
 # soup = BeautifulSoup(html, "html.parser")
 #
 # # Retrieve all of the anchor tags
-# tags = soup('a')
+# tags = soup('span')
+# lst = list()
 # for tag in tags:
-#     # Look at the parts of a tag
-#     print('TAG:', tag)
-#     print('URL:', tag.get('href', None))
-#     print('Contents:', tag.contents[0])
-#     print('Attrs:', tag.attrs)
+#     lst.append(tag.contents[0])
+#
+# total = 0
+# for num in lst:
+#     total = int(num) + total
+#
+# print(total)
 
+# Exercise 12.3
+import urllib.request, urllib.parse, urllib.error
+from bs4 import BeautifulSoup
+import ssl
 
-# Exercise 12.1
-import socket
-mysock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-mysock.connect(('data.pr4e.org', 80))
-cmd = 'GET http://data.pr4e.org/intro-short.txt HTTP/1.0\r\n\r\n'.encode()
-mysock.send(cmd)
+ctx = ssl.create_default_context()
+ctx.check_hostname = False
+ctx.verify_mode = ssl.CERT_NONE
 
-while True:
-    data = mysock.recv(512)
-    if len(data) < 1:
-        break
-    print(data.decode(),end='')
-
-mysock.close()
-
+url = "http://py4e-data.dr-chuck.net/known_by_Taniesha.html"
+position = 17
+count = 7
+html = urllib.request.urlopen(url, context=ctx).read()
+soup = BeautifulSoup(html, 'html.parser')
+lst = list()
+tags = soup('a')
+for i in range(count):
+    link = tags[position].get('href', None)
+    print("Following Link:", link)
+    lst.append(tags[position].contents[0])
+    html = urllib.request.urlopen(link, context=ctx).read()
+    soup = BeautifulSoup(html, 'html.parser')
+    tags = soup('a')
+    link = tags[position].get('href', None)
+print(lst[-1])
